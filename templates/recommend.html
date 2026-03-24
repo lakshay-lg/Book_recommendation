@@ -2,239 +2,552 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Book Recommender System</title>
+  <title>BookMatch - Get Recommendations</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    /* Reset & Base */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --surface-hover: #242424;
+      --border: #2a2a2a;
+      --text: #e8e8e8;
+      --text-muted: #888;
+      --accent: #c9a84c;
+      --accent-light: #e0c36a;
+      --accent-glow: rgba(201, 168, 76, 0.15);
+      --radius: 12px;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body: 'Inter', 'Segoe UI', sans-serif;
     }
 
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f5f5f7;
-      color: #333;
-      padding-bottom: 50px;
+      font-family: var(--font-body);
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
     }
 
     /* Navbar */
-    .navbar {
-      background-color: #6c63ff;
-      padding: 1rem 2rem;
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(15, 15, 15, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 64px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
     }
 
-    .navbar-brand {
-      font-size: 1.5rem;
-      color: white;
-      font-weight: 600;
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
       text-decoration: none;
+      letter-spacing: -0.02em;
     }
 
     .nav-links {
       display: flex;
-      gap: 1.5rem;
+      gap: 2rem;
     }
 
     .nav-links a {
-      color: white;
+      color: var(--text-muted);
       text-decoration: none;
+      font-size: 0.9rem;
       font-weight: 500;
-      transition: opacity 0.3s;
+      transition: color 0.2s;
+      position: relative;
     }
 
-    .nav-links a:hover {
-      opacity: 0.8;
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--text);
     }
 
-    /* Header */
-    h1 {
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 1px;
+    }
+
+    /* Hero / Search Section */
+    .search-section {
       text-align: center;
-      margin: 40px 0 20px;
-      font-size: 2.5rem;
-      font-weight: 600;
-      color: #333;
+      padding: 80px 20px 50px;
+      max-width: 720px;
+      margin: 0 auto;
     }
 
-    /* Form */
-    .form-container {
-      max-width: 600px;
-      margin: 0 auto 40px;
-      padding: 0 20px;
+    .search-section h1 {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 12px;
     }
 
+    .search-section h1 span {
+      color: var(--accent);
+    }
+
+    .search-section p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 36px;
+    }
+
+    /* Search Form */
     form {
       display: flex;
-      flex-direction: column;
-      gap: 15px;
+      gap: 0;
+      position: relative;
     }
 
-    input[type="text"] {
-      padding: 12px 16px;
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 16px 20px;
       font-size: 1rem;
-      border: 2px solid #ccc;
-      border-radius: 8px;
+      font-family: var(--font-body);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: var(--radius) 0 0 var(--radius);
+      color: var(--text);
       outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    input[type="text"]:focus {
-      border-color: #6c63ff;
+    .search-input::placeholder {
+      color: #555;
     }
 
-    input[type="submit"] {
-      padding: 12px;
-      background-color: #ffb400;
-      color: black;
-      font-size: 1rem;
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .search-btn {
+      padding: 16px 28px;
+      font-size: 0.95rem;
       font-weight: 600;
-      border: none;
-      border-radius: 8px;
+      font-family: var(--font-body);
+      background: var(--accent);
+      color: #0f0f0f;
+      border: 1px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: background 0.2s;
+      white-space: nowrap;
     }
 
-    input[type="submit"]:hover {
-      background-color: #ffa000;
+    .search-btn:hover {
+      background: var(--accent-light);
     }
 
-    /* Grid Layout */
-    .grid-container {
+    /* Suggestions Dropdown */
+    .suggestions-list {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      max-height: 280px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+    }
+
+    .suggestions-list.active {
+      display: block;
+    }
+
+    .suggestion-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+
+    .suggestion-item:hover,
+    .suggestion-item.selected {
+      background: var(--surface-hover);
+      color: var(--accent);
+    }
+
+    /* Matched Info / Error */
+    .matched-info {
+      text-align: center;
+      margin-bottom: 10px;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .matched-info strong {
+      color: var(--accent);
+    }
+
+    .error-message {
+      text-align: center;
+      margin: 0 auto 30px;
+      padding: 14px 24px;
+      background: rgba(220, 60, 60, 0.1);
+      color: #e66;
+      border: 1px solid rgba(220, 60, 60, 0.2);
+      border-radius: var(--radius);
+      max-width: 600px;
+      font-size: 0.9rem;
+    }
+
+    /* Section Title */
+    .section-header {
+      text-align: center;
+      margin: 0 auto 30px;
+      max-width: 600px;
+    }
+
+    .section-header h2 {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Grid */
+    .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 30px;
-      max-width: 1200px;
-      margin: auto;
-      padding: 0 20px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem 80px;
     }
 
+    /* Card */
     .card {
-      background-color: #fff;
-      border-radius: 16px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       overflow: hidden;
-      transition: transform 0.2s ease;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      cursor: default;
+      opacity: 0;
+      animation: fadeUp 0.4s ease forwards;
     }
 
     .card:hover {
-      transform: scale(1.02);
+      transform: translateY(-6px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--accent);
     }
 
-    .card img {
+    .card-img {
+      position: relative;
       width: 100%;
-      height: 250px;
+      height: 300px;
+      overflow: hidden;
+      background: #111;
+    }
+
+    .card-img img {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover .card-img img {
+      transform: scale(1.05);
     }
 
     .card-body {
-      padding: 1rem;
+      padding: 16px 18px 20px;
     }
 
-    .card-body p {
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: #6c63ff;
-      margin: 0 0 5px;
-    }
-
-    .card-body h4 {
-      font-size: 1rem;
-      color: #555;
-      margin: 0;
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
       font-weight: 500;
+      line-height: 1.35;
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
-    @media (max-width: 500px) {
-      h1 {
-        font-size: 2rem;
-      }
+    .card-author {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
 
-      .card img {
-        height: 200px;
-      }
+    /* Divider */
+    .divider {
+      max-width: 80px;
+      height: 2px;
+      background: var(--accent);
+      margin: 0 auto 30px;
+      border-radius: 1px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .search-section h1 { font-size: 2rem; }
+      .search-section { padding: 50px 16px 36px; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; padding: 0 16px 60px; }
+      .card-img { height: 240px; }
+      nav { padding: 0 1rem; }
+      .search-input { padding: 14px 16px; font-size: 0.9rem; }
+      .search-btn { padding: 14px 18px; font-size: 0.85rem; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <a class="navbar-brand" href="#">Book Recommender</a>
+  <nav>
+    <a class="logo" href="/">BookMatch</a>
     <div class="nav-links">
-      <a href="/">Home</a>
-      <a href="/recommend">Recommend</a>
+      <a href="/">Popular</a>
+      <a href="/recommend" class="active">Recommend</a>
     </div>
   </nav>
 
-  <!-- Header -->
-  <h1>Recommend Books</h1>
+  <!-- Search Hero -->
+  <div class="search-section">
+    <h1>Find Books <span>You'll Love</span></h1>
+    <p>Enter a book you've enjoyed and we'll recommend similar titles based on what other readers loved.</p>
 
-  <!-- Form -->
-  <div class="form-container">
-    <form action="/recommend_books" method="post">
-      <input name="user_input" type="text" placeholder="Enter a book you like...">
-      <input type="submit" value="Recommend">
+    <form action="/recommend_books" method="post" autocomplete="off">
+      <div class="search-wrapper">
+        <input id="book-input" class="search-input" name="user_input" type="text" placeholder="Search by title..." autocomplete="off">
+        <div id="suggestions" class="suggestions-list"></div>
+      </div>
+      <button type="submit" class="search-btn">Recommend</button>
     </form>
   </div>
 
+  {% if error %}
+  <div class="error-message">{{ error }}</div>
+  {% endif %}
 
-  {% if not data %}
-  <h1>Samples Books</h1>
-<div class="grid-container">
-  <div class="card">
-    <img src="http://images.amazon.com/images/P/0312924585.0.jpg" alt="Book Cover">
-    <div class="card-body">
-      <p>Silence of the Lambs</p>
-      <h4>Thomas Harris</h4>
-    </div>
-  </div>
-  <div class="card">
-    <img src="http://images.amazon.com/images/P/1573227331.0.jpg" alt="Book Cover">
-    <div class="card-body">
-      <p>About a Boy</p>
-      <h4>Nick Hornby</h4>
-    </div>
-  </div>
-  <div class="card">
-    <img src="http://images.amazon.com/images/P/0312265840.0.jpg" alt="Book Cover">
-    <div class="card-body">
-      <p>Seven Up (A Stephanie Plum Novel)</p>
-      <h4>Janet Evanovich</h4>
-    </div>
-  </div>
-  <div class="card">
-    <img src="http://images.amazon.com/images/P/0062502174.0.jpg" alt="Book Cover">
-    <div class="card-body">
-      <p>The Alchemist: A Fable About Following Your Dream</p>
-      <h4>Paulo Coelho</h4>
-    </div>
-  </div>
-  <div class="card">
-    <img src="http://images.amazon.com/images/P/0316969443.0.jpg" alt="Book Cover">
-    <div class="card-body">
-      <p>Suzanne's Diary for Nicholas</p>
-      <h4>James Patterson</h4>
-    </div>
-  </div>
-</div>
-{% endif %}
+  {% if matched_title %}
+  <div class="matched-info">Showing recommendations for: <strong>{{ matched_title }}</strong></div>
+  {% endif %}
 
   {% if data %}
-  <div class="grid-container">
+  <div class="section-header">
+    <h2>Recommended For You</h2>
+  </div>
+  <div class="divider"></div>
+  <div class="grid">
     {% for i in data %}
-    <div class="card">
-      <img src="{{ i[2] }}" alt="Book Cover">
+    <div class="card" style="animation-delay: {{ loop.index0 * 80 }}ms">
+      <div class="card-img">
+        <img src="{{ i[2] }}" alt="{{ i[0] }}" loading="lazy">
+      </div>
       <div class="card-body">
-        <p>{{ i[0] }}</p>
-        <h4>{{ i[1] }}</h4>
+        <div class="card-title">{{ i[0] }}</div>
+        <div class="card-author">{{ i[1] }}</div>
       </div>
     </div>
     {% endfor %}
   </div>
   {% endif %}
 
+  {% if not data and not error %}
+  <div class="section-header">
+    <h2>Try These Popular Picks</h2>
+    <p>Not sure where to start? Here are some favorites.</p>
+  </div>
+  <div class="divider"></div>
+  <div class="grid">
+    <div class="card" style="animation-delay: 0ms">
+      <div class="card-img">
+        <img src="http://images.amazon.com/images/P/0312924585.0.jpg" alt="Silence of the Lambs" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div class="card-title">Silence of the Lambs</div>
+        <div class="card-author">Thomas Harris</div>
+      </div>
+    </div>
+    <div class="card" style="animation-delay: 80ms">
+      <div class="card-img">
+        <img src="http://images.amazon.com/images/P/1573227331.0.jpg" alt="About a Boy" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div class="card-title">About a Boy</div>
+        <div class="card-author">Nick Hornby</div>
+      </div>
+    </div>
+    <div class="card" style="animation-delay: 160ms">
+      <div class="card-img">
+        <img src="http://images.amazon.com/images/P/0312265840.0.jpg" alt="Seven Up" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div class="card-title">Seven Up (A Stephanie Plum Novel)</div>
+        <div class="card-author">Janet Evanovich</div>
+      </div>
+    </div>
+    <div class="card" style="animation-delay: 240ms">
+      <div class="card-img">
+        <img src="http://images.amazon.com/images/P/0062502174.0.jpg" alt="The Alchemist" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div class="card-title">The Alchemist: A Fable About Following Your Dream</div>
+        <div class="card-author">Paulo Coelho</div>
+      </div>
+    </div>
+    <div class="card" style="animation-delay: 320ms">
+      <div class="card-img">
+        <img src="http://images.amazon.com/images/P/0316969443.0.jpg" alt="Suzanne's Diary" loading="lazy">
+      </div>
+      <div class="card-body">
+        <div class="card-title">Suzanne's Diary for Nicholas</div>
+        <div class="card-author">James Patterson</div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <footer>BookMatch &mdash; Discover books you'll love</footer>
+
+  <script>
+    const input = document.getElementById('book-input');
+    const suggestionsBox = document.getElementById('suggestions');
+    let selectedIndex = -1;
+    let debounceTimer;
+
+    input.addEventListener('input', function() {
+      clearTimeout(debounceTimer);
+      const query = this.value.trim();
+
+      if (query.length < 1) {
+        suggestionsBox.classList.remove('active');
+        suggestionsBox.innerHTML = '';
+        return;
+      }
+
+      debounceTimer = setTimeout(() => {
+        fetch('/api/suggestions?q=' + encodeURIComponent(query))
+          .then(res => res.json())
+          .then(data => {
+            selectedIndex = -1;
+            if (data.length === 0) {
+              suggestionsBox.classList.remove('active');
+              suggestionsBox.innerHTML = '';
+              return;
+            }
+
+            suggestionsBox.innerHTML = data.map((title, i) =>
+              '<div class="suggestion-item" data-index="' + i + '">' + escapeHtml(title) + '</div>'
+            ).join('');
+            suggestionsBox.classList.add('active');
+
+            suggestionsBox.querySelectorAll('.suggestion-item').forEach(item => {
+              item.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                input.value = this.textContent;
+                suggestionsBox.classList.remove('active');
+                suggestionsBox.innerHTML = '';
+              });
+            });
+          });
+      }, 200);
+    });
+
+    input.addEventListener('keydown', function(e) {
+      const items = suggestionsBox.querySelectorAll('.suggestion-item');
+      if (!items.length) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+        updateSelected(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedIndex = Math.max(selectedIndex - 1, 0);
+        updateSelected(items);
+      } else if (e.key === 'Enter' && selectedIndex >= 0) {
+        e.preventDefault();
+        input.value = items[selectedIndex].textContent;
+        suggestionsBox.classList.remove('active');
+        suggestionsBox.innerHTML = '';
+      } else if (e.key === 'Escape') {
+        suggestionsBox.classList.remove('active');
+      }
+    });
+
+    input.addEventListener('blur', function() {
+      setTimeout(() => {
+        suggestionsBox.classList.remove('active');
+      }, 150);
+    });
+
+    function updateSelected(items) {
+      items.forEach((item, i) => {
+        item.classList.toggle('selected', i === selectedIndex);
+      });
+      if (items[selectedIndex]) {
+        items[selectedIndex].scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
 </body>
 </html>
