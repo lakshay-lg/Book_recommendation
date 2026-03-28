@@ -73,9 +73,12 @@ def find_best_match(user_input):
     return None
 
 
-@app.route('/recommend_books',methods=['post'])
+@app.route('/recommend_books', methods=['GET', 'POST'])
 def recommend():
-    user_input = request.form.get('user_input')
+    if request.method == 'GET':
+        user_input = request.args.get('book', '').strip()
+    else:
+        user_input = request.form.get('user_input')
     match_index = find_best_match(user_input)
 
     if match_index is None:

@@ -267,9 +267,12 @@
       border-radius: var(--radius);
       overflow: hidden;
       transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-      cursor: default;
+      cursor: pointer;
       opacity: 0;
       animation: fadeUp 0.4s ease forwards;
+      text-decoration: none;
+      color: inherit;
+      display: block;
     }
 
     .card:hover {
@@ -392,7 +395,7 @@
   <div class="divider"></div>
   <div class="grid">
     {% for i in data %}
-    <div class="card" style="animation-delay: {{ loop.index0 * 80 }}ms">
+    <a class="card" href="/recommend_books?book={{ i[0]|urlencode }}" style="animation-delay: {{ loop.index0 * 80 }}ms">
       <div class="card-img">
         <img src="{{ i[2] }}" alt="{{ i[0] }}" loading="lazy">
       </div>
@@ -400,7 +403,7 @@
         <div class="card-title">{{ i[0] }}</div>
         <div class="card-author">{{ i[1] }}</div>
       </div>
-    </div>
+    </a>
     {% endfor %}
   </div>
   {% endif %}
